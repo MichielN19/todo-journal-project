@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
+  <title>Journal/Todo app</title>
+  <link href="css/main.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <h1 class="current-date-h1"> <%= date %> </h1>
+  <h2 class="current-time-h2"> <%= time %> </h2>
+
+  <div class="todo-container">
+    <div class="todo-dark-container">
+
+      <!-- This is the part that is for every induvidual todo item -->
+      <% for(let item of listItems){ %>
+        <!-- This is the todo item, the one with only the title and bottom-border -->
+        <div class="todo-item">
+          <div class="left-container">
+            <!-- The form that posts if the todo item is checked -->
+            <form action="/check" method="post">
+              <label class="form-switch">
+                <input type="checkbox" onchange="setTimeout(()=> this.form.submit(), 1000)" name="checkItemId" value="<%=item.id%>">
+                <i></i>
+              </label>
+            </form>
+
+            <!-- This is the title of the todo item -->
+            <p id="title<%=item.id%>">
+              <%=item.title%>
+            </p>
+
+            <!-- This is the form that edits the todo item -->
+            <form class="edit" action="/edit" method="post">
+              <div>
+                <input type="hidden" name="UpdateItemId" value="<%= item.id %>">
+                <input id="input<%=item.id%>" type="text" name="UpdateItemTitle" value="<%= item.title %>"
+                  autocomplete="off" [autofocus]="true" hidden="true">
+                <button id="done<%=item.id%>" class="edit" type="submit" hidden>check</button>
+              </div>
+              <input id="inputTime<%=item.id%>" class="time-input" type="time" name="UpdateItemTime" value="<%= item.donetime %>" hidden="true" >
+            </form>
+
+            <!-- This is the edit button -->
+            <button id="edit<%=item.id%>" class="edit" onclick="handler('<%=item.id%>')"><img src="/images/pencil.png"
+                alt="change icon"></button>
+          </div>
+          <!-- This is the time for when the user thinks the todo item must be done -->
+          <p id="donetime<%=item.id%>">
+            <%= item.donetime %>
+          </p>
+        </div>
+        <% } %>
+
+          <div class="new-todo">
+            <form action="/add" method="post">
+              <div class="new-input-container">
+                <input type="text" name="newItemTitle" placeholder="New Title" autocomplete="off">
+                <input class="time-input" type="time" name="newItemTime" placeholder="Done Time" autocomplete="off">
+              </div>
+              <button type="submit">New Item</button>
+            </form>
+          </div>
+    </div>
+  </div>
+
+
+  <script src="/javascript/main.js"></script>
+  <script>
+    function handler(id) {
+      document.getElementById("title" + id).setAttribute("hidden", true)
+      document.getElementById("edit" + id).setAttribute("hidden", true)
+      document.getElementById("donetime" + id).setAttribute("hidden", true)
+      document.getElementById("done" + id).removeAttribute("hidden")
+      document.getElementById("input" + id).removeAttribute("hidden")
+      document.getElementById("inputTime" + id).removeAttribute("hidden")
+    }
+
+  </script>
+</body>
+
+</html>

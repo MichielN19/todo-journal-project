@@ -1,0 +1,52 @@
+body {
+    background-color: #131313;
+    font-family: "SF Pro Display", sans-serif;
+    color: white;
+}
+
+.header-container {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: reverse;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-container img {
+    width: 30px;
+    height: auto;
+}
+.header-container > a {
+    color: white;
+    text-decoration: none;
+    font-size: 25px;
+}
+.header-container > a:hover {
+    color: lightgray;
+    cursor: pointer;
+}
+
+h1 {
+    font-weight: 800;
+}
+
+.textarea-container {
+    margin: 0 auto;
+    width: 80%;
+    height: 500px;
+
+}
+.textarea-container > textarea{
+    box-sizing: border-box;
+    font-size: 17px;
+    font-family: "SF Pro Display", sans-serif;
+    background-color: #222222;
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    outline: none;
+    resize: none;
+}
