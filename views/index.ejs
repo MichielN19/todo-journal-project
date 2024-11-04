@@ -11,8 +11,8 @@
 
 <body>
 
-  <h1 class="current-date-h1"> <%= date %> </h1>
-  <h2 class="current-time-h2"> <%= time %> </h2>
+    <h1 class="current-date-h1"><%= date %></h1>
+    <h2 class="current-time-h2"><%= time %></h2>
 
   <div class="todo-container">
     <div class="todo-dark-container">
@@ -22,10 +22,14 @@
         <!-- This is the todo item, the one with only the title and bottom-border -->
         <div class="todo-item">
           <div class="left-container">
+
+
             <!-- The form that posts if the todo item is checked -->
             <form action="/check" method="post">
               <label class="form-switch">
-                <input type="checkbox" onchange="setTimeout(()=> this.form.submit(), 1000)" name="checkItemId" value="<%=item.id%>">
+                <input type="hidden" name="CheckItemDoneTime" value="<%= item.donetime %>">
+                <input type="hidden" name="CheckItemId" value="<%= item.id %>">
+                <input id="checkbox<%=item.id%>" type="checkbox" onchange="setTimeout(()=> this.form.submit(), 1000)">
                 <i></i>
               </label>
             </form>
@@ -40,10 +44,15 @@
               <div>
                 <input type="hidden" name="UpdateItemId" value="<%= item.id %>">
                 <input id="input<%=item.id%>" type="text" name="UpdateItemTitle" value="<%= item.title %>"
-                  autocomplete="off" [autofocus]="true" hidden="true">
-                <button id="done<%=item.id%>" class="edit" type="submit" hidden>check</button>
+                  autocomplete="off" autofocus hidden="true">
+                <button id="done<%=item.id%>" class="edit" type="submit" hidden><img src="/images/checkmark.png" alt=""></button>
+                <input id="inputTime<%=item.id%>" class="time-input" type="time" name="UpdateItemTime" value="<%= item.donetime %>" hidden="true" >
               </div>
-              <input id="inputTime<%=item.id%>" class="time-input" type="time" name="UpdateItemTime" value="<%= item.donetime %>" hidden="true" >
+            </form>
+
+            <form class="delete" action="/delete" method="post">
+              <input type="hidden" name="DeleteItemId" value="<%= item.id %>">
+              <button id="delete<%=item.id%>" class="edit" type="submit" hidden><img src="/images/delete.png" alt=""></button>
             </form>
 
             <!-- This is the edit button -->
@@ -79,8 +88,17 @@
       document.getElementById("done" + id).removeAttribute("hidden")
       document.getElementById("input" + id).removeAttribute("hidden")
       document.getElementById("inputTime" + id).removeAttribute("hidden")
+      document.getElementById("delete" + id).removeAttribute("hidden")
     }
 
+    function ToggleCheckbox(id) {
+      if(document.getElementById("checkbox" + id).checked === false) {
+        document.getElementById("checkbox" + id).checked = true;
+      } else {
+        document.getElementById("checkbox" + id).checked = false;
+      }
+      alert(id);
+    }
   </script>
 </body>
 

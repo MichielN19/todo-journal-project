@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -19,7 +20,7 @@ const db = new pg.Client({
 db.connect();
 
 let items = [
-  { id: 1, title: "Slapen", doneTime: "12:00" }
+  { id: 1, title: "Slapen", doneTime: "12:00", isChecked: false }
 ];
 
 function getCurrentTime() {
@@ -33,7 +34,7 @@ function getCurrentTime() {
 
 
 async function GetAllItems() {
-  const result = await db.query("SELECT id, title, to_char(donetime, 'HH24:MI') AS donetime FROM items ORDER BY id ASC");
+  const result = await db.query("SELECT id, title, ischecked, to_char(donetime, 'HH24:MI') AS donetime FROM items ORDER BY id ASC");
   return result.rows;
 }
 
@@ -44,9 +45,78 @@ async function AddNewItem(itemTitle, doneTime) {
   items.push(result.rows[0]);
 }
 
+async function CheckItem(itemId, itemDonetime) {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const timeString = `${hours}:${minutes}`;
+  console.log(timeString);
+  console.log(itemDonetime);
+  console.log(itemId);
+
+  if(itemDonetime <= timeString) {
+    try {
+      await db.query("DELETE FROM items WHERE id = $1", [itemId]);
+      console.log("Succesfully checked the item");
+    } catch (error) {
+      console.log(error); 
+    }
+  } else {
+    try {
+      await db.query("UPDATE items SET isChecked = true WHERE id = $1", [itemId]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+async function CheckItemTime(itemDonetime) {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const timeString = `${hours}:${minutes}:00`;
+  console.log(timeString);
+
+  if(itemDonetime <= timeString) {
+    try {
+      await db.query("DELETE FROM items WHERE donetime = $1", [itemDonetime]);
+      console.log("Succesfully deleted the item");
+    } catch (error) {
+      console.log(error); 
+    }
+  }
+}
+
+async function CheckIscheckedBool(itemId) {
+  const result = await db.query("SELECT isChecked FROM items WHERE id = $1", [itemId]);
+  return result.rows[0].ischecked;
+
+}
+
+async function UncheckItem (itemId) {
+  const result = await db.query("UPDATE items SET isChecked = false WHERE id = $1", [itemId]);
+  console.log(result.rows);
+  return result.rows;
+}
+
 
 app.get("/", async (req, res) => {
   items = await GetAllItems();
+  const itemsResult = await db.query("SELECT donetime, ischecked FROM items");
+  const itemsData = itemsResult.rows;
+
+
+  itemsData.forEach(async row => {
+    console.log(row.ischecked);
+
+    if(row.ischecked == true) {
+     itemsData.forEach(async row => {
+        console.log(row.donetime);
+        await CheckItemTime(row.donetime);
+      });
+    }
+  });
+
 
   const { date, time } = getCurrentTime();
   res.render('index.ejs', { listItems: items, date: date, time: time });
@@ -78,15 +148,36 @@ app.post("/edit", async (req, res) => {
     console.log(result.rows[0]);
     res.redirect("/");
   } catch (error) {
-    console.log(error);  
+    console.log(error);
   }
 });
 
 app.post("/check", async (req, res) => {
+  const checkDoneTime = req.body.CheckItemDoneTime;
+  const checkItemId = req.body.CheckItemId;
+
+  const itemBool = await CheckIscheckedBool(checkItemId);
+  console.log(`Item bool is: ${itemBool}`);
+
+  if(itemBool == false) {
+    await CheckItem(checkItemId, checkDoneTime);
+    console.log("Checked items");
+  } else {
+    await UncheckItem(checkItemId);
+    console.log("Unchecked item");
+  }
+
+
+  res.redirect("/");
+
+});
+
+app.post("/delete", async (req, res) => {
+  const deleteItemId = req.body.DeleteItemId;
+  console.log(deleteItemId);
 
   try {
-    await db.query("DELETE FROM items WHERE id = $1", [req.body.checkItemId]);
-    console.log("Succesfully checked the item");
+    await db.query("DELETE FROM items WHERE id = $1", [deleteItemId]);
     res.redirect("/");
   } catch (error) {
     console.log(error); 
