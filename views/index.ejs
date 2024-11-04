@@ -11,8 +11,12 @@
 
 <body>
 
-    <h1 class="current-date-h1"><%= date %></h1>
-    <h2 class="current-time-h2"><%= time %></h2>
+  <h1 class="current-date-h1">
+    <%= date %>
+  </h1>
+  <h2 class="current-time-h2">
+    <%= time %>
+  </h2>
 
   <div class="todo-container">
     <div class="todo-dark-container">
@@ -41,18 +45,21 @@
 
             <!-- This is the form that edits the todo item -->
             <form class="edit" action="/edit" method="post">
-              <div>
+              <div class="edit-info-container">
                 <input type="hidden" name="UpdateItemId" value="<%= item.id %>">
                 <input id="input<%=item.id%>" type="text" name="UpdateItemTitle" value="<%= item.title %>"
                   autocomplete="off" autofocus hidden="true">
-                <button id="done<%=item.id%>" class="edit" type="submit" hidden><img src="/images/checkmark.png" alt=""></button>
-                <input id="inputTime<%=item.id%>" class="time-input" type="time" name="UpdateItemTime" value="<%= item.donetime %>" hidden="true" >
+                <button id="done<%=item.id%>" class="edit" type="submit" hidden><img src="/images/checkmark.png"
+                    alt=""></button>
+                <input id="inputTime<%=item.id%>" class="time-input" type="time" name="UpdateItemTime"
+                  value="<%= item.donetime %>" hidden="true">
               </div>
             </form>
 
             <form class="delete" action="/delete" method="post">
               <input type="hidden" name="DeleteItemId" value="<%= item.id %>">
-              <button id="delete<%=item.id%>" class="edit" type="submit" hidden><img src="/images/delete.png" alt=""></button>
+              <button id="delete<%=item.id%>" class="edit" type="submit" hidden><img src="/images/delete.png"
+                  alt=""></button>
             </form>
 
             <!-- This is the edit button -->
@@ -66,15 +73,15 @@
         </div>
         <% } %>
 
-          <div class="new-todo">
-            <form action="/add" method="post">
-              <div class="new-input-container">
-                <input type="text" name="newItemTitle" placeholder="New Title" autocomplete="off">
-                <input class="time-input" type="time" name="newItemTime" placeholder="Done Time" autocomplete="off">
-              </div>
-              <button type="submit">New Item</button>
-            </form>
-          </div>
+    </div>
+    <div class="new-todo-container">
+      <form action="/add" method="post">
+        <div class="new-input-container">
+          <input type="text" name="newItemTitle" placeholder="New Title" autocomplete="off">
+          <input class="time-input" type="time" name="newItemTime" placeholder="Done Time" autocomplete="off">
+        </div>
+        <button type="submit">New Item</button>
+      </form>
     </div>
   </div>
 
@@ -92,7 +99,7 @@
     }
 
     function ToggleCheckbox(id) {
-      if(document.getElementById("checkbox" + id).checked === false) {
+      if (document.getElementById("checkbox" + id).checked === false) {
         document.getElementById("checkbox" + id).checked = true;
       } else {
         document.getElementById("checkbox" + id).checked = false;

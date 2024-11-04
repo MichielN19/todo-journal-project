@@ -88,9 +88,13 @@ async function CheckItemTime(itemDonetime) {
 }
 
 async function CheckIscheckedBool(itemId) {
-  const result = await db.query("SELECT isChecked FROM items WHERE id = $1", [itemId]);
-  return result.rows[0].ischecked;
-
+  try {
+    const result = await db.query("SELECT isChecked FROM items WHERE id = $1", [itemId]);
+    return result.rows[0].ischecked;
+    
+  } catch (error) {
+    console.log(error)  
+  }
 }
 
 async function UncheckItem (itemId) {
@@ -155,6 +159,7 @@ app.post("/edit", async (req, res) => {
 app.post("/check", async (req, res) => {
   const checkDoneTime = req.body.CheckItemDoneTime;
   const checkItemId = req.body.CheckItemId;
+  console.log(checkItemId);
 
   const itemBool = await CheckIscheckedBool(checkItemId);
   console.log(`Item bool is: ${itemBool}`);
@@ -169,7 +174,6 @@ app.post("/check", async (req, res) => {
 
 
   res.redirect("/");
-
 });
 
 app.post("/delete", async (req, res) => {
